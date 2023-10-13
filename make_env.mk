@@ -29,21 +29,12 @@ GIT_BRANCH = $(shell git symbolic-ref --short HEAD)
 # PIPELINE_TRIGGER = $(shell curl -X POST -F token=$(RUNNER_TOKEN) -F ref=$(GIT_BRANCH) $(RUNNER_URL))
 
 # Vivado variables
-VIV_DESIGN = ad7298_rx_att_controller
 VIV_PRJ_DIR = run
 VIV_SCRIPTS_DIR = scripts
 VIV_PROD_DIR = products
 VIV_REPORTS_DIR = $(VIV_PROD_DIR)/reports
 VIV_SRC = $(VIV_SCRIPTS_DIR)/package_ip.tcl
 VIV_UPG = $(VIV_SCRIPTS_DIR)/upgrade_ip.tcl
-export VIVADO_PROJ_NAME := ad7298_rx_att_controller
-export VIVADO_VENDOR :=
-export VIVADO_LIBRARY := verilog_misc_modules
-
-# IP library paths
-# IP_LIBRARY_PATH := ip/
-
-# LIB_DEPS +=
 
 # Description
 .PHONY: help
