@@ -1,4 +1,4 @@
-## Useful hacks
+# Useful hacks
 TIMESTAMP = $(shell date +"%T")
 copy_file = cp $1 $2
 copy_dir = cp -r $1 $2
@@ -21,7 +21,7 @@ VIVADO_RUN = $(XILINX_VIVADO)/bin/vivado
 SCRIPTS_DIR = scripts
 PRODUCTS_DIR = products
 
-## Git variables
+# Git variables
 GIT_SHA = $(shell git rev-parse --short HEAD)
 GIT_BRANCH = $(shell git symbolic-ref --short HEAD)
 # RUNNER_TOKEN =

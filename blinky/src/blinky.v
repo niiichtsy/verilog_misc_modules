@@ -17,8 +17,8 @@ module blinky #(
   always @(posedge clk) begin
     if (!resetn) begin
       mode <= COUNTER;
-      led_counter <= 4'b0;
-      led_out <= 4'b0;
+      led_counter <= 'h00;
+      led_out <= 'h00;
     end else begin
 
       case (mode)
