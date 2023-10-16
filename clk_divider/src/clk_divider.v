@@ -1,6 +1,6 @@
 module clk_divider #(
-    DIV_VALUE = 125000000,  // Pynq Z2 default PL clock
-    DIV_WIDTH = 32
+    parameter DIV_VALUE = 125000000,
+    parameter DIV_WIDTH = 32
 ) (
     output reg clk_out,
     input clk_in,
@@ -20,6 +20,12 @@ module clk_divider #(
       end else div_counter <= div_counter + 1'b1;
 
     end
+  end
+
+  // Testbench waves
+  initial begin
+    $dumpvars(0, clk_divider);
+    $dumpfile("dump.vcd");
   end
 
 endmodule
