@@ -1,8 +1,3 @@
-####################################################################################
-## Copyright 2023(c) Transbit Sp. z o.o.
-## Created by Michał Bojke
-####################################################################################
-
 #
 # STEP #0: define input and output directories, create project
 #
