@@ -1,4 +1,5 @@
 # Useful hacks
+export DATESTAMP := $(shell date +"%H%d%m%g")
 TIMESTAMP = $(shell date +"%T")
 copy_file = cp $1 $2
 copy_dir = cp -r $1 $2
@@ -22,8 +23,8 @@ SCRIPTS_DIR = scripts
 PRODUCTS_DIR = products
 
 # Git variables
-GIT_SHA = $(shell git rev-parse --short HEAD)
-GIT_BRANCH = $(shell git symbolic-ref --short HEAD)
+export GIT_SHA = $(shell git rev-parse --short HEAD)
+export GIT_BRANCH = $(shell git symbolic-ref --short HEAD)
 # RUNNER_TOKEN =
 # RUNNER_URL =
 # PIPELINE_TRIGGER = $(shell curl -X POST -F token=$(RUNNER_TOKEN) -F ref=$(GIT_BRANCH) $(RUNNER_URL))
@@ -46,14 +47,18 @@ help:
 	@echo '  make upgrade'
 	@echo '    Upgrade an existing Vivado IP'
 	@echo '  make clean-project'
-	@echo '    Clean Vivado files produced in previous run'
+	@echo '    Clean Vivado files produced in a previous run'
 	@echo '  make clean-products'
 	@echo '    Clean output products'
 	@echo '  make gitlab-run-pipeline'
 	@echo '    Run job at GitLab server - compile project and create artifacts'
+	@echo '  make lib <LIB=[all | arithm | util | net]>'
+	@echo '    Create and package specified libraries'
+	@echo '  make clean-lib <LIB=[all | arithm | util | net]>'
+	@echo '    Clean output products and project files for specified libraries'
 	@echo ''
 
-.PHONY: all ip upgrade clean-project clean-products gitlab-run-pipeline
+.PHONY: all ip upgrade clean-project clean-products gitlab-run-pipeline lib clean-lib
 all: clean-project clean-products ip upgrade
 
 ip:
@@ -76,3 +81,45 @@ gitlab-run-pipeline:
 	$(call print,Triggering remote runner for Git SHA commit $(call green,$(GIT_SHA)))
 	@echo Run remote pipeline at $(GIT_BRANCH).
 	$(MUTE) $(PIPELINE_TRIGGER)
+
+## This is not very elegant, but oh well. I'll probably figure out a better way to do this at some point
+lib:
+	@if [ $(LIB) = all ] || [ $(LIB) = util ]; then \
+		for lib in $(UTIL_LIST); do \
+			$(call print,Building utility IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(UTIL_LIBRARY_PATH)$${lib} ip || exit $$?; \
+		done \
+	fi;
+	@if [ $(LIB) = all ] || [ $(LIB) = arithm ]; then \
+		 for lib in $(ARITHM_LIST); do \
+			$(call print,Building arithmetic IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(ARITHM_LIBRARY_PATH)$${lib} ip || exit $$?; \
+		done \
+	fi;
+	@if [ $(LIB) = all ] || [ $(LIB) = net ]; then \
+		for lib in $(NET_LIST); do \
+			$(call print,Building network IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(NET_LIBRARY_PATH)$${lib} ip || exit $$?; \
+		done \
+	fi;
+
+
+clean-lib:
+	@if [ $(LIB) = all ] || [ $(LIB) = util ]; then \
+		for lib in $(UTIL_LIST); do \
+			$(call print,Cleaning utility IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(UTIL_LIBRARY_PATH)$${lib} clean-project clean-products || exit $$?; \
+		done \
+	fi;
+	@if [ $(LIB) = all ] || [ $(LIB) = arithm ]; then \
+		 for lib in $(ARITHM_LIST); do \
+			$(call print,Cleaning arithmetic IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(ARITHM_LIBRARY_PATH)$${lib} clean-project clean-products || exit $$?; \
+		done \
+	fi;
+	@if [ $(LIB) = all ] || [ $(LIB) = net ]; then \
+		for lib in $(NET_LIST); do \
+			$(call print,Cleaning network IP Libraries for Git SHA commit $(call green,$(GIT_SHA))); \
+			$(MAKE) -C $(NET_LIBRARY_PATH)$${lib} clean-project clean-products || exit $$?; \
+		done \
+	fi;
